@@ -21,13 +21,9 @@ export function AhpConsistencyPanel({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-            Consistency Check
+            Độ nhất quán
           </p>
           <h4 className="mt-2 text-lg font-bold text-slate-900">{title}</h4>
-          <p className="mt-1 text-sm text-slate-600">
-            Hệ thống hiển thị đầy đủ WSV, CV, lambda max, CI, CR và RI để chứng minh việc kiểm tra
-            nhất quán là có thật, không phải mô phỏng.
-          </p>
         </div>
         <StatusBadge tone={analysis.isConsistent ? 'success' : 'warning'}>
           {analysis.isConsistent ? (
@@ -35,24 +31,16 @@ export function AhpConsistencyPanel({
           ) : (
             <AlertTriangle className="size-3.5" />
           )}
-          {analysis.isConsistent ? 'Valid' : 'Invalid'}
+          {analysis.isConsistent ? 'Hợp lệ' : 'Chưa hợp lệ'}
         </StatusBadge>
       </div>
 
       <div className="mt-5 grid gap-3 md:grid-cols-5">
-        <MetricCard label="lambda max" value={analysis.lambdaMax.toFixed(3)} />
+        <MetricCard label="Lambda max" value={analysis.lambdaMax.toFixed(3)} />
         <MetricCard label="CI" value={analysis.consistencyIndex.toFixed(3)} />
         <MetricCard label="RI" value={analysis.randomIndex.toFixed(2)} />
         <MetricCard label="CR" value={analysis.consistencyRatio.toFixed(3)} />
-        <MetricCard label="Status" value={analysis.isConsistent ? 'Hop le' : 'Can chinh lai'} />
-      </div>
-
-      <div className="mt-5 rounded-[1.5rem] bg-[#f3efe8] p-4">
-        <p className="text-sm font-semibold text-slate-900">
-          {analysis.isConsistent
-            ? 'Ma tran nhat quan, co the su dung cho tong hop diem.'
-            : 'Ma tran chua nhat quan, can dieu chinh lai truoc khi xem ranking chinh thuc.'}
-        </p>
+        <MetricCard label="Trạng thái" value={analysis.isConsistent ? 'Hợp lệ' : 'Cần sửa'} />
       </div>
 
       {!compact ? (
@@ -61,7 +49,7 @@ export function AhpConsistencyPanel({
             <thead>
               <tr>
                 <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                  Item
+                  Mục
                 </th>
                 <th className="px-3 py-2 text-right text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
                   W

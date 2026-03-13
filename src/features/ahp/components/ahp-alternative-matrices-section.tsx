@@ -11,6 +11,7 @@ type AhpAlternativeMatricesSectionProps = {
   cases: RescueCase[]
   activeCriterion: CriterionKey
   onSelectCriterion: (criterionKey: CriterionKey) => void
+  activeBlock: 'matrix' | 'consistency'
   matrices: AlternativeMatrixMap
   onChangeMatrix: (criterionKey: CriterionKey, nextMatrix: number[][]) => void
   analyses: Record<CriterionKey, MatrixAnalysis>
@@ -20,6 +21,7 @@ export function AhpAlternativeMatricesSection({
   cases,
   activeCriterion,
   onSelectCriterion,
+  activeBlock,
   matrices,
   onChangeMatrix,
   analyses,
@@ -32,13 +34,12 @@ export function AhpAlternativeMatricesSection({
     <div className="space-y-4">
       <Panel className="p-5 md:p-6">
         <SectionHeading
-          eyebrow="Step 3"
-          title="Alternative matrices theo tung criterion"
-          description="Day la buoc danh gia cac phuong an theo tung tieu chi. Moi criterion co mot ma tran so sanh cap alternatives rieng."
+          eyebrow="Bước 3"
+          title="Ma trận phương án theo tiêu chí"
           action={
             <div className="inline-flex items-center gap-2 rounded-full bg-[#eefbe7] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
               <Layers3 className="size-4" />
-              {cases.length} alternatives dang demo
+              {cases.length} phương án
             </div>
           }
         />
@@ -60,28 +61,32 @@ export function AhpAlternativeMatricesSection({
           ))}
         </div>
 
-        <div className="mt-5">
-          <AhpPairwiseMatrixEditor
-            labels={labels}
-            matrix={activeMatrix}
-            analysis={activeAnalysis}
-            title={`Alternative matrix cho criterion: ${criteriaLabels[activeCriterion]}`}
-            description="Neu sua o [i, j] thi o [j, i] se tu dong cap nhat nghich dao. Duong cheo chinh luon bang 1."
-            onChange={(rowIndex, columnIndex, nextValue) =>
-              onChangeMatrix(
-                activeCriterion,
-                setMatrixValue(activeMatrix, rowIndex, columnIndex, nextValue),
-              )
-            }
-          />
-        </div>
+        {activeBlock === 'matrix' ? (
+          <div className="mt-5">
+            <AhpPairwiseMatrixEditor
+              labels={labels}
+              matrix={activeMatrix}
+              analysis={activeAnalysis}
+              title={`Ma trận cho tiêu chí: ${criteriaLabels[activeCriterion]}`}
+              description=""
+              onChange={(rowIndex, columnIndex, nextValue) =>
+                onChangeMatrix(
+                  activeCriterion,
+                  setMatrixValue(activeMatrix, rowIndex, columnIndex, nextValue),
+                )
+              }
+            />
+          </div>
+        ) : null}
       </Panel>
 
-      <AhpConsistencyPanel
-        labels={labels}
-        analysis={activeAnalysis}
-        title={`Consistency cho ${criteriaLabels[activeCriterion]}`}
-      />
+      {activeBlock === 'consistency' ? (
+        <AhpConsistencyPanel
+          labels={labels}
+          analysis={activeAnalysis}
+          title={`Độ nhất quán: ${criteriaLabels[activeCriterion]}`}
+        />
+      ) : null}
     </div>
   )
 }

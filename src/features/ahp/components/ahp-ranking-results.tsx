@@ -1,11 +1,11 @@
 import { AlertTriangle, Trophy } from 'lucide-react'
-import { Panel } from '../../../shared/components/ui/panel'
-import { SectionHeading } from '../../../shared/components/ui/section-heading'
-import { StatusBadge } from '../../../shared/components/ui/status-badge'
 import { criteriaLabels, criteriaOrder } from '../../../shared/lib/ahp'
 import { formatPercent } from '../../../shared/lib/format'
 import { severityConfig } from '../../../shared/lib/severity'
 import type { AHPEvaluationResult } from '../../../shared/types/ahp'
+import { Panel } from '../../../shared/components/ui/panel'
+import { SectionHeading } from '../../../shared/components/ui/section-heading'
+import { StatusBadge } from '../../../shared/components/ui/status-badge'
 
 type AhpRankingResultsProps = {
   evaluation: AHPEvaluationResult
@@ -21,14 +21,13 @@ export function AhpRankingResults({
   return (
     <Panel className="p-5 md:p-6">
       <SectionHeading
-        eyebrow="Ranking Results"
-        title="Bang xep hang phuong an"
-        description="Hien thi rank, final score, breakdown theo criterion, danger level va trang thai cuu ho."
+        eyebrow="Xếp hạng"
+        title="Bảng xếp hạng phương án"
         action={
           !evaluation.isFullyConsistent ? (
             <StatusBadge tone="warning">
               <AlertTriangle className="size-3.5" />
-              Consistency warning
+              CR cần xem lại
             </StatusBadge>
           ) : null
         }
@@ -36,8 +35,7 @@ export function AhpRankingResults({
 
       {!evaluation.isFullyConsistent ? (
         <div className="mt-4 rounded-[1.5rem] border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
-          Mot hoac nhieu ma tran chua dat nguong CR &lt; 0.1. Ranking van duoc hien thi de tham khao,
-          nhung khong nen xem la ket qua chinh thuc cho demo hoc thuat.
+          Có ma trận chưa đạt ngưỡng CR &lt; 0.1.
         </div>
       ) : null}
 
@@ -61,12 +59,12 @@ export function AhpRankingResults({
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                      Rank #{row.rank}
+                      Hạng #{row.rank}
                     </span>
                     {topOne ? (
                       <StatusBadge tone="success">
                         <Trophy className="size-3.5" />
-                        Top 1
+                        Hạng 1
                       </StatusBadge>
                     ) : null}
                   </div>
@@ -74,7 +72,7 @@ export function AhpRankingResults({
                     {row.caseItem.locationDescription ?? row.caseId}
                   </p>
                   <p className="mt-1 text-sm text-slate-600">
-                    {row.caseItem.rescueStatus} • {row.caseItem.district}
+                    {row.caseItem.district}
                   </p>
                 </div>
 

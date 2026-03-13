@@ -1,10 +1,10 @@
-import { type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Activity, MessageCircleMore, RadioTower, RefreshCw } from 'lucide-react'
+import { formatDateTime } from '../../../shared/lib/format'
+import { usePostsQuery } from '../../../shared/lib/query-hooks'
 import { Panel } from '../../../shared/components/ui/panel'
 import { SectionHeading } from '../../../shared/components/ui/section-heading'
 import { StatusBadge } from '../../../shared/components/ui/status-badge'
-import { formatDateTime } from '../../../shared/lib/format'
-import { usePostsQuery } from '../../../shared/lib/query-hooks'
 
 export function SourceMonitoring() {
   const postsQuery = usePostsQuery()
@@ -15,19 +15,11 @@ export function SourceMonitoring() {
   return (
     <div className="space-y-4">
       <Panel className="p-4 md:p-5">
-        <SectionHeading
-          eyebrow="Sources"
-          title="Monitoring sources"
-          description="Màn theo dõi nguồn được nén lại theo kiểu management: nhìn nhanh trạng thái sync, volume comment và vùng bao phủ."
-        />
+        <SectionHeading eyebrow="Nguồn" title="Nguồn theo dõi" />
 
         <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <CompactMetric icon={<Activity className="size-4" />} label="Nguồn live" value={String(liveCount)} />
-          <CompactMetric
-            icon={<MessageCircleMore className="size-4" />}
-            label="Tổng comments"
-            value={String(totalComments)}
-          />
+          <CompactMetric icon={<Activity className="size-4" />} label="Nguồn đang chạy" value={String(liveCount)} />
+          <CompactMetric icon={<MessageCircleMore className="size-4" />} label="Tổng bình luận" value={String(totalComments)} />
           <CompactMetric icon={<RefreshCw className="size-4" />} label="Tổng nguồn" value={String(posts.length)} />
         </div>
       </Panel>
@@ -39,9 +31,9 @@ export function SourceMonitoring() {
               <tr>
                 <th className="px-4 py-4">Nguồn</th>
                 <th className="px-4 py-4">Trạng thái</th>
-                <th className="px-4 py-4">Comment volume</th>
+                <th className="px-4 py-4">Số bình luận</th>
                 <th className="px-4 py-4">Khu vực</th>
-                <th className="px-4 py-4">Lần sync</th>
+                <th className="px-4 py-4">Lần đồng bộ</th>
               </tr>
             </thead>
             <tbody>
@@ -59,7 +51,11 @@ export function SourceMonitoring() {
                   <td className="px-4 py-4 align-top">
                     <StatusBadge tone={post.syncStatus === 'live' ? 'success' : 'warning'}>
                       <Activity className="size-3.5" />
-                      {post.syncStatus}
+                      {post.syncStatus === 'live'
+                        ? 'Đang chạy'
+                        : post.syncStatus === 'lagging'
+                          ? 'Chậm'
+                          : 'Tạm dừng'}
                     </StatusBadge>
                   </td>
                   <td className="px-4 py-4 align-top text-sm font-medium text-slate-900">

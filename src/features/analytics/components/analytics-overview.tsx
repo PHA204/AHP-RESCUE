@@ -1,8 +1,8 @@
 import { Bar, BarChart, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { useUiStore } from '../../../app/store/ui-store'
+import { useCasesQuery } from '../../../shared/lib/query-hooks'
 import { Panel } from '../../../shared/components/ui/panel'
 import { SectionHeading } from '../../../shared/components/ui/section-heading'
-import { useCasesQuery } from '../../../shared/lib/query-hooks'
 
 export function AnalyticsOverview() {
   const activePresetId = useUiStore((state) => state.activePresetId)
@@ -22,20 +22,16 @@ export function AnalyticsOverview() {
   return (
     <div className="space-y-4">
       <Panel className="p-4 md:p-5">
-        <SectionHeading
-          eyebrow="Analytics"
-          title="Snapshot phân tích"
-          description="Nén analytics thành 2 biểu đồ chính và 3 số tổng quan để tránh kéo trang không cần thiết."
-        />
+        <SectionHeading eyebrow="Phân tích" title="Số liệu tổng hợp" />
 
         <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <CompactMetric label="Tổng cases" value={String(cases.length)} />
+          <CompactMetric label="Tổng ca" value={String(cases.length)} />
           <CompactMetric
-            label="Critical + High"
+            label="Nguy cấp + cao"
             value={String(cases.filter((item) => item.severity === 'CRITICAL' || item.severity === 'HIGH').length)}
           />
           <CompactMetric
-            label="Đã rescued"
+            label="Đã tiếp cận"
             value={String(cases.filter((item) => item.rescueStatus === 'rescued').length)}
           />
         </div>
@@ -43,11 +39,7 @@ export function AnalyticsOverview() {
 
       <div className="grid gap-4 xl:grid-cols-2">
         <Panel className="p-4 md:p-5">
-          <SectionHeading
-            eyebrow="Severity"
-            title="Severity distribution"
-            description="Phân bố mức độ khẩn cấp trong dataset."
-          />
+          <SectionHeading eyebrow="Mức độ" title="Phân bố mức độ" />
           <div className="mt-4 h-[52vh] rounded-[1.6rem] border border-slate-200 bg-white/80 p-3">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={severityData}>
@@ -59,11 +51,7 @@ export function AnalyticsOverview() {
         </Panel>
 
         <Panel className="p-4 md:p-5">
-          <SectionHeading
-            eyebrow="Status"
-            title="Rescue status split"
-            description="Nhìn nhanh waiting, dispatched, rescued và false alarm."
-          />
+          <SectionHeading eyebrow="Trạng thái" title="Phân bố trạng thái cứu hộ" />
           <div className="mt-4 h-[52vh] rounded-[1.6rem] border border-slate-200 bg-white/80 p-3">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>

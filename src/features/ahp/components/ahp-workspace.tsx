@@ -29,6 +29,7 @@ import { severityConfig } from '../../../shared/lib/severity'
 import type { AlternativeMatrixMap } from '../../../shared/types/ahp'
 import type { CriterionKey, SeverityLevel } from '../../../shared/types/domain'
 import { AhpAlternativeMatricesSection } from './ahp-alternative-matrices-section'
+import { AhpBlockStepper } from './ahp-block-stepper'
 import { AhpConsistencyPanel } from './ahp-consistency-panel'
 import { AhpFormulaPanel } from './ahp-formula-panel'
 import { AhpHierarchyVisual } from './ahp-hierarchy-visual'
@@ -47,6 +48,10 @@ type ScreeningState = {
 }
 
 type WorkspaceView = 'overview' | 'screening' | 'criteria' | 'alternatives' | 'results'
+type OverviewBlock = 'theory' | 'hierarchy' | 'formula'
+type CriteriaBlock = 'matrix' | 'consistency'
+type AlternativeBlock = 'matrix' | 'consistency'
+type ResultsBlock = 'synthesis' | 'ranking' | 'decision'
 
 const defaultScreening: ScreeningState = {
   severity: ['CRITICAL', 'HIGH', 'MEDIUM'],
@@ -62,11 +67,11 @@ const viewItems: Array<{
   label: string
   icon: ComponentType<{ className?: string }>
 }> = [
-  { id: 'overview', label: 'Overview', icon: GitBranch },
-  { id: 'screening', label: 'Screening', icon: Filter },
-  { id: 'criteria', label: 'Criteria', icon: Scale },
-  { id: 'alternatives', label: 'Alternatives', icon: Layers3 },
-  { id: 'results', label: 'Results', icon: Sigma },
+  { id: 'overview', label: 'Tổng quan', icon: GitBranch },
+  { id: 'screening', label: 'Lọc trước', icon: Filter },
+  { id: 'criteria', label: 'Tiêu chí', icon: Scale },
+  { id: 'alternatives', label: 'Phương án', icon: Layers3 },
+  { id: 'results', label: 'Kết quả', icon: Sigma },
 ]
 
 export function AhpWorkspace() {
@@ -81,6 +86,11 @@ export function AhpWorkspace() {
   const currentPreset = presets.find((item) => item.id === activePresetId) ?? presets[0]
 
   const [activeView, setActiveView] = useState<WorkspaceView>('overview')
+  const [activeOverviewBlock, setActiveOverviewBlock] = useState<OverviewBlock>('theory')
+  const [activeCriteriaBlock, setActiveCriteriaBlock] = useState<CriteriaBlock>('matrix')
+  const [activeAlternativeBlock, setActiveAlternativeBlock] =
+    useState<AlternativeBlock>('matrix')
+  const [activeResultsBlock, setActiveResultsBlock] = useState<ResultsBlock>('synthesis')
   const [screening, setScreening] = useState<ScreeningState>(defaultScreening)
   const [manualExclusions, setManualExclusions] = useState<string[]>([])
   const [criteriaMatrix, setCriteriaMatrix] = useState<number[][]>(
@@ -107,10 +117,16 @@ export function AhpWorkspace() {
       .filter((caseItem) =>
         screening.severity.includes(caseItem.severity as ScreeningState['severity'][number]),
       )
-      .filter((caseItem) => (screening.vulnerableOnly ? caseItem.vulnerableGroups.length > 0 : true))
-      .filter((caseItem) => (screening.geocodedOnly ? caseItem.geocodeStatus === 'success' : true))
+      .filter((caseItem) =>
+        screening.vulnerableOnly ? caseItem.vulnerableGroups.length > 0 : true,
+      )
+      .filter((caseItem) =>
+        screening.geocodedOnly ? caseItem.geocodeStatus === 'success' : true,
+      )
       .filter((caseItem) => (caseItem.waitingHours ?? 0) >= screening.waitingHoursMin)
-      .filter((caseItem) => (screening.district === 'ALL' ? true : caseItem.district === screening.district))
+      .filter((caseItem) =>
+        screening.district === 'ALL' ? true : caseItem.district === screening.district,
+      )
       .filter((caseItem) => !manualExclusions.includes(caseItem.id))
       .sort((left, right) => (left.currentRank ?? 99) - (right.currentRank ?? 99))
       .slice(0, screening.maxCandidates)
@@ -132,7 +148,8 @@ export function AhpWorkspace() {
   )
 
   const selectedResult =
-    evaluation.synthesisRows.find((row) => row.caseId === selectedCaseId) ?? evaluation.synthesisRows[0]
+    evaluation.synthesisRows.find((row) => row.caseId === selectedCaseId) ??
+    evaluation.synthesisRows[0]
   const districts = Array.from(new Set((casesQuery.data ?? []).map((item) => item.district))).sort()
 
   if (casesQuery.isLoading || presetsQuery.isLoading) {
@@ -150,15 +167,11 @@ export function AhpWorkspace() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-              AHP Workspace
+              AHP
             </p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
-              Khong gian AHP theo tung buoc lam viec
+              Không gian làm việc AHP
             </h2>
-            <p className="mt-1 text-sm text-slate-600">
-              Toi uu cho web quan ly: it scroll hon, chuyen tab theo tac vu, van giu du logic hoc
-              thuat cua AHP.
-            </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -181,11 +194,11 @@ export function AhpWorkspace() {
 
         <div className="mt-4 grid gap-3 xl:grid-cols-[1fr,auto]">
           <div className="grid gap-3 sm:grid-cols-3">
-            <SummaryCard label="Preset" value={currentPreset?.label ?? 'N/A'} tone="sky" />
-            <SummaryCard label="Candidates" value={String(screenedCases.length)} tone="green" />
+            <SummaryCard label="Mẫu AHP" value={currentPreset?.label ?? 'Không có'} tone="sky" />
+            <SummaryCard label="Phương án" value={String(screenedCases.length)} tone="green" />
             <SummaryCard
-              label="Consistency"
-              value={evaluation.isFullyConsistent ? 'Valid' : 'Review'}
+              label="Độ nhất quán"
+              value={evaluation.isFullyConsistent ? 'Hợp lệ' : 'Cần xem lại'}
               tone={evaluation.isFullyConsistent ? 'green' : 'orange'}
             />
           </div>
@@ -200,7 +213,7 @@ export function AhpWorkspace() {
               className="clay-button-secondary px-4 py-3 text-sm"
             >
               <RefreshCcw className="size-4" />
-              Apply preset
+              Áp dụng mẫu
             </button>
             <button
               type="button"
@@ -211,11 +224,15 @@ export function AhpWorkspace() {
                 setCriteriaMatrix(currentPreset.matrix)
                 setAlternativeMatrixState(null)
                 setActiveAlternativeCriterion('danger_level')
+                setActiveOverviewBlock('theory')
+                setActiveCriteriaBlock('matrix')
+                setActiveAlternativeBlock('matrix')
+                setActiveResultsBlock('synthesis')
               }}
               className="clay-button-secondary px-4 py-3 text-sm"
             >
               <RotateCcw className="size-4" />
-              Reset
+              Đặt lại
             </button>
             <button
               type="button"
@@ -234,7 +251,7 @@ export function AhpWorkspace() {
               className="clay-button-primary px-4 py-3 text-sm"
             >
               <Sparkles className="size-4" />
-              Recalculate
+              Tính lại
             </button>
           </div>
         </div>
@@ -248,7 +265,13 @@ export function AhpWorkspace() {
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setActiveView(item.id)}
+                onClick={() => {
+                  setActiveView(item.id)
+                  if (item.id === 'overview') setActiveOverviewBlock('theory')
+                  if (item.id === 'criteria') setActiveCriteriaBlock('matrix')
+                  if (item.id === 'alternatives') setActiveAlternativeBlock('matrix')
+                  if (item.id === 'results') setActiveResultsBlock('synthesis')
+                }}
                 className={`inline-flex items-center gap-2 rounded-full border-[2px] px-4 py-2 text-sm font-semibold transition ${
                   activeView === item.id
                     ? 'border-slate-800 bg-[#d9eef7] text-slate-900'
@@ -265,22 +288,39 @@ export function AhpWorkspace() {
 
       {activeView === 'overview' ? (
         <div className="space-y-4">
-          <AhpProcessOverview screenedCases={screenedCases} />
-          <AhpHierarchyVisual screenedCases={screenedCases} />
-          <AhpFormulaPanel />
+          <Panel className="p-4 md:p-5">
+            <AhpBlockStepper
+              title="Tổng quan"
+              subtitle=""
+              steps={[
+                { id: 'theory', label: 'Lý thuyết' },
+                { id: 'hierarchy', label: 'Cấu trúc' },
+                { id: 'formula', label: 'Công thức' },
+              ]}
+              activeStepId={activeOverviewBlock}
+              onChange={(stepId) => setActiveOverviewBlock(stepId as OverviewBlock)}
+            />
+          </Panel>
+
+          {activeOverviewBlock === 'theory' ? (
+            <AhpProcessOverview screenedCases={screenedCases} />
+          ) : null}
+          {activeOverviewBlock === 'hierarchy' ? (
+            <AhpHierarchyVisual screenedCases={screenedCases} />
+          ) : null}
+          {activeOverviewBlock === 'formula' ? <AhpFormulaPanel /> : null}
         </div>
       ) : null}
 
       {activeView === 'screening' ? (
         <Panel className="p-5 md:p-6">
           <SectionHeading
-            eyebrow="Pre-processing"
-            title="Screening truoc khi vao AHP"
-            description="Buoc nay la tien xu ly thuc te de giam alternatives, khong phai mot trong 3 buoc AHP ly thuyet."
+            eyebrow="Lọc trước"
+            title="Lọc trước khi tính AHP"
             action={
               <StatusBadge tone="info">
                 <Filter className="size-3.5" />
-                {screenedCases.length} candidates
+                {screenedCases.length} phương án
               </StatusBadge>
             }
           />
@@ -295,7 +335,7 @@ export function AhpWorkspace() {
                   }
                   className="rounded-[1.35rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700"
                 >
-                  <option value="ALL">Tat ca khu vuc</option>
+                  <option value="ALL">Tất cả khu vực</option>
                   {districts.map((district) => (
                     <option key={district} value={district}>
                       {district}
@@ -315,14 +355,14 @@ export function AhpWorkspace() {
                 >
                   {[4, 5, 6].map((count) => (
                     <option key={count} value={count}>
-                      Top {count} alternatives
+                      Top {count} phương án
                     </option>
                   ))}
                 </select>
               </div>
 
               <label className="block rounded-[1.5rem] bg-[#e9f6ff] px-4 py-4 text-sm text-slate-700">
-                Cho it nhat <strong>{screening.waitingHoursMin} gio</strong>
+                Chờ ít nhất <strong>{screening.waitingHoursMin} giờ</strong>
                 <input
                   type="range"
                   min={0}
@@ -377,7 +417,7 @@ export function AhpWorkspace() {
                   }
                   className="size-4 rounded border-slate-300 accent-sky-600"
                 />
-                Chi giu lai ca co nhom de ton thuong
+                Chỉ giữ lại ca có nhóm dễ tổn thương
               </label>
 
               <label className="flex items-center gap-3 rounded-[1.35rem] bg-white px-4 py-3 text-sm text-slate-600">
@@ -392,12 +432,14 @@ export function AhpWorkspace() {
                   }
                   className="size-4 rounded border-slate-300 accent-sky-600"
                 />
-                Chi dung ca da dinh vi
+                Chỉ dùng ca đã định vị
               </label>
             </div>
 
             <div className="rounded-[1.75rem] bg-[#f3efe8] p-4">
-              <p className="text-sm font-semibold text-slate-900">Alternatives dang duoc dua vao AHP</p>
+              <p className="text-sm font-semibold text-slate-900">
+                Phương án đưa vào AHP
+              </p>
               <div className="mt-4 space-y-2">
                 {screenedCases.length > 0 ? (
                   screenedCases.map((caseItem, index) => (
@@ -419,7 +461,7 @@ export function AhpWorkspace() {
                       />
                       <span>
                         <strong className="text-slate-900">
-                          A{index + 1} • {caseItem.locationDescription ?? caseItem.id}
+                          A{index + 1} | {caseItem.locationDescription ?? caseItem.id}
                         </strong>
                         <span className="mt-1 block text-xs leading-5 text-slate-500">
                           {caseItem.rawComment}
@@ -429,7 +471,7 @@ export function AhpWorkspace() {
                   ))
                 ) : (
                   <div className="rounded-[1.35rem] border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm text-slate-500">
-                    Chua co alternative nao sau screening.
+                    Chưa có phương án sau khi lọc.
                   </div>
                 )}
               </div>
@@ -440,82 +482,146 @@ export function AhpWorkspace() {
 
       {screenedCases.length < 2 ? (
         <EmptyState
-          title="Can it nhat 2 alternatives de lap ma tran AHP"
-          description="Hay mo rong screening hoac bo bot exclusion de co the thuc hien so sanh cap."
+          title="Cần ít nhất 2 phương án để lập ma trận AHP"
+          description="Điều chỉnh bộ lọc để tiếp tục."
         />
       ) : null}
 
       {screenedCases.length >= 2 && activeView === 'criteria' ? (
         <div className="space-y-4">
-          <Panel className="p-5 md:p-6">
-            <SectionHeading
-              eyebrow="Step 2"
-              title="Criteria pairwise matrix"
-              description="Ma tran tieu chi bat buoc hien thi matrix A, normalized matrix A' va vector trong so W."
+          <Panel className="p-4 md:p-5">
+            <AhpBlockStepper
+              title="Tiêu chí"
+              subtitle=""
+              steps={[
+                { id: 'matrix', label: 'Ma trận' },
+                { id: 'consistency', label: 'Độ nhất quán' },
+              ]}
+              activeStepId={activeCriteriaBlock}
+              onChange={(stepId) => setActiveCriteriaBlock(stepId as CriteriaBlock)}
             />
-
-            <div className="mt-5">
-              <AhpPairwiseMatrixEditor
-                labels={criteriaOrder.map((criterionKey) => criteriaLabels[criterionKey])}
-                matrix={criteriaMatrix}
-                analysis={evaluation.criteria}
-                title="Criteria matrix editor"
-                description="Gia tri tren duong cheo chinh luon bang 1. Neu sua o [i, j] thi o [j, i] se tu dong cap nhat = 1 / a_ij."
-                onChange={(rowIndex, columnIndex, nextValue) =>
-                  setCriteriaMatrix((current) =>
-                    setMatrixValue(current, rowIndex, columnIndex, nextValue),
-                  )
-                }
-              />
-            </div>
           </Panel>
 
-          <AhpConsistencyPanel
-            labels={criteriaOrder.map((criterionKey) => criteriaLabels[criterionKey])}
-            analysis={evaluation.criteria}
-            title="Criteria consistency"
-          />
+          {activeCriteriaBlock === 'matrix' ? (
+            <Panel className="p-5 md:p-6">
+              <SectionHeading
+                eyebrow="Bước 2"
+                title="Ma trận so sánh cặp tiêu chí"
+              />
+
+              <div className="mt-5">
+                <AhpPairwiseMatrixEditor
+                  labels={criteriaOrder.map((criterionKey) => criteriaLabels[criterionKey])}
+                  matrix={criteriaMatrix}
+                  analysis={evaluation.criteria}
+                  title="Ma trận tiêu chí"
+                  description=""
+                  onChange={(rowIndex, columnIndex, nextValue) =>
+                    setCriteriaMatrix((current) =>
+                      setMatrixValue(current, rowIndex, columnIndex, nextValue),
+                    )
+                  }
+                />
+              </div>
+            </Panel>
+          ) : null}
+
+          {activeCriteriaBlock === 'consistency' ? (
+            <AhpConsistencyPanel
+              labels={criteriaOrder.map((criterionKey) => criteriaLabels[criterionKey])}
+              analysis={evaluation.criteria}
+              title="Độ nhất quán của ma trận tiêu chí"
+            />
+          ) : null}
         </div>
       ) : null}
 
       {screenedCases.length >= 2 && activeView === 'alternatives' ? (
-        <AhpAlternativeMatricesSection
-          cases={screenedCases}
-          activeCriterion={activeAlternativeCriterion}
-          onSelectCriterion={setActiveAlternativeCriterion}
-          matrices={alternativeMatrices}
-          analyses={evaluation.alternatives}
-          onChangeMatrix={(criterionKey, nextMatrix) =>
-            setAlternativeMatrixState({
-              screeningKey,
-              matrices: {
-                ...alternativeMatrices,
-                [criterionKey]: nextMatrix,
-              },
-            })
-          }
-        />
+        <div className="space-y-4">
+          <Panel className="p-4 md:p-5">
+            <AhpBlockStepper
+              title="Phương án"
+              subtitle=""
+              steps={[
+                { id: 'matrix', label: 'Ma trận' },
+                { id: 'consistency', label: 'Độ nhất quán' },
+              ]}
+              activeStepId={activeAlternativeBlock}
+              onChange={(stepId) => setActiveAlternativeBlock(stepId as AlternativeBlock)}
+            />
+          </Panel>
+
+          <AhpAlternativeMatricesSection
+            cases={screenedCases}
+            activeCriterion={activeAlternativeCriterion}
+            onSelectCriterion={setActiveAlternativeCriterion}
+            activeBlock={activeAlternativeBlock}
+            matrices={alternativeMatrices}
+            analyses={evaluation.alternatives}
+            onChangeMatrix={(criterionKey, nextMatrix) =>
+              setAlternativeMatrixState({
+                screeningKey,
+                matrices: {
+                  ...alternativeMatrices,
+                  [criterionKey]: nextMatrix,
+                },
+              })
+            }
+          />
+        </div>
       ) : null}
 
       {screenedCases.length >= 2 && activeView === 'results' ? (
         <div className="space-y-4">
-          <AhpSynthesisSection evaluation={evaluation} />
-          <AhpRankingResults
-            evaluation={evaluation}
-            selectedCaseId={selectedResult?.caseId ?? null}
-            onSelectCase={setSelectedCaseId}
-          />
-          <Panel className="p-4">
-            <div className="flex flex-wrap items-center gap-3">
-              <StatusBadge tone={evaluation.isFullyConsistent ? 'success' : 'warning'}>
-                <CheckCircle2 className="size-3.5" />
-                {evaluation.isFullyConsistent ? 'Ready for decision' : 'Consistency review needed'}
-              </StatusBadge>
-              <p className="text-sm text-slate-600">
-                Ket qua tong hop duoc dat trong mot tab rieng de operator xem nhanh ma khong can cuon qua toan bo ly thuyet.
-              </p>
-            </div>
+          <Panel className="p-4 md:p-5">
+            <AhpBlockStepper
+              title="Kết quả"
+              subtitle=""
+              steps={[
+                { id: 'synthesis', label: 'Tổng hợp' },
+                { id: 'ranking', label: 'Xếp hạng' },
+                { id: 'decision', label: 'Đề xuất' },
+              ]}
+              activeStepId={activeResultsBlock}
+              onChange={(stepId) => setActiveResultsBlock(stepId as ResultsBlock)}
+            />
           </Panel>
+
+          {activeResultsBlock === 'synthesis' ? (
+            <AhpSynthesisSection evaluation={evaluation} />
+          ) : null}
+
+          {activeResultsBlock === 'ranking' ? (
+            <AhpRankingResults
+              evaluation={evaluation}
+              selectedCaseId={selectedResult?.caseId ?? null}
+              onSelectCase={setSelectedCaseId}
+            />
+          ) : null}
+
+          {activeResultsBlock === 'decision' ? (
+            <Panel className="p-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <StatusBadge tone={evaluation.isFullyConsistent ? 'success' : 'warning'}>
+                  <CheckCircle2 className="size-3.5" />
+                  {evaluation.isFullyConsistent
+                    ? 'Sẵn sàng đề xuất'
+                    : 'Cần xem lại CR'}
+                </StatusBadge>
+              </div>
+
+              {selectedResult ? (
+                <div className="mt-4 rounded-[1.5rem] bg-[#eefbe7] px-4 py-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                    Phương án đề xuất
+                  </p>
+                  <p className="mt-2 text-lg font-bold text-slate-900">
+                    {selectedResult.caseItem.locationDescription ?? selectedResult.caseId}
+                  </p>
+                </div>
+              ) : null}
+            </Panel>
+          ) : null}
         </div>
       ) : null}
     </div>

@@ -1,10 +1,10 @@
 import { Award, Lock, ShieldAlert } from 'lucide-react'
-import { Panel } from '../../../shared/components/ui/panel'
-import { SectionHeading } from '../../../shared/components/ui/section-heading'
-import { StatusBadge } from '../../../shared/components/ui/status-badge'
 import { criteriaLabels, criteriaOrder } from '../../../shared/lib/ahp'
 import { formatPercent } from '../../../shared/lib/format'
 import type { AHPEvaluationResult } from '../../../shared/types/ahp'
+import { Panel } from '../../../shared/components/ui/panel'
+import { SectionHeading } from '../../../shared/components/ui/section-heading'
+import { StatusBadge } from '../../../shared/components/ui/status-badge'
 
 type AhpSynthesisSectionProps = {
   evaluation: AHPEvaluationResult
@@ -19,13 +19,12 @@ export function AhpSynthesisSection({ evaluation }: AhpSynthesisSectionProps) {
     <div className="grid gap-4 xl:grid-cols-[1.05fr,0.95fr]">
       <Panel className="p-5 md:p-6">
         <SectionHeading
-          eyebrow="Synthesis"
-          title="Tong hop S × W = Final Score"
-          description="Ma tran S duoc ghep tu cac vector trong so alternatives theo tung criterion. Sau do nhan voi vector trong so criteria W de ra diem cuoi."
+          eyebrow="Tổng hợp"
+          title="Tổng hợp S x W"
           action={
             <StatusBadge tone={evaluation.isFullyConsistent ? 'success' : 'warning'}>
               {evaluation.isFullyConsistent ? <Award className="size-3.5" /> : <Lock className="size-3.5" />}
-              {evaluation.isFullyConsistent ? 'Ready to rank' : 'Blocked by consistency'}
+              {evaluation.isFullyConsistent ? 'Có thể xếp hạng' : 'Cần xem lại CR'}
             </StatusBadge>
           }
         />
@@ -35,7 +34,7 @@ export function AhpSynthesisSection({ evaluation }: AhpSynthesisSectionProps) {
             <thead>
               <tr>
                 <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                  Alternative
+                  Phương án
                 </th>
                 {criteriaOrder.map((criterionKey) => (
                   <th
@@ -46,7 +45,7 @@ export function AhpSynthesisSection({ evaluation }: AhpSynthesisSectionProps) {
                   </th>
                 ))}
                 <th className="px-3 py-2 text-right text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                  Final
+                  Điểm
                 </th>
               </tr>
             </thead>
@@ -76,7 +75,7 @@ export function AhpSynthesisSection({ evaluation }: AhpSynthesisSectionProps) {
         </div>
 
         <div className="mt-5 rounded-[1.5rem] bg-[#f3efe8] p-4">
-          <p className="text-sm font-semibold text-slate-900">Vector W (criteria weights)</p>
+          <p className="text-sm font-semibold text-slate-900">Trọng số tiêu chí</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {criteriaOrder.map((criterionKey) => (
               <span
@@ -93,13 +92,8 @@ export function AhpSynthesisSection({ evaluation }: AhpSynthesisSectionProps) {
 
       <Panel className="p-5 md:p-6">
         <SectionHeading
-          eyebrow="Recommended Priority"
-          title={topRow ? topRow.caseItem.locationDescription ?? topRow.caseId : 'Chua co xep hang'}
-          description={
-            evaluation.isFullyConsistent
-              ? 'Alternative dung hang 1 sau khi tong hop tat ca matrix bat buoc.'
-              : 'Consistency chua dat nguong, ket qua duoi day chi nen xem nhu preview.'
-          }
+          eyebrow="Đề xuất"
+          title={topRow ? topRow.caseItem.locationDescription ?? topRow.caseId : 'Chưa có xếp hạng'}
         />
 
         {topRow ? (
@@ -114,7 +108,7 @@ export function AhpSynthesisSection({ evaluation }: AhpSynthesisSectionProps) {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                    Rank #1
+                    Hạng 1
                   </p>
                   <p className="mt-2 text-2xl font-bold text-slate-900">
                     {formatPercent(topRow.finalScore, 2)}
@@ -126,7 +120,7 @@ export function AhpSynthesisSection({ evaluation }: AhpSynthesisSectionProps) {
                   ) : (
                     <ShieldAlert className="size-3.5" />
                   )}
-                  {evaluation.isFullyConsistent ? 'Recommended' : 'Preview only'}
+                  {evaluation.isFullyConsistent ? 'Đề xuất' : 'Tạm xem'}
                 </StatusBadge>
               </div>
               <p className="mt-3 text-sm leading-6 text-slate-600">{topRow.caseItem.rawComment}</p>
@@ -159,7 +153,7 @@ export function AhpSynthesisSection({ evaluation }: AhpSynthesisSectionProps) {
           </div>
         ) : (
           <div className="mt-4 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-500">
-            Chua co du lieu tong hop de hien thi.
+            Chưa có dữ liệu tổng hợp.
           </div>
         )}
       </Panel>

@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { MonitorCog, Palette, SlidersHorizontal } from 'lucide-react'
 import { Panel } from '../../../shared/components/ui/panel'
 import { SectionHeading } from '../../../shared/components/ui/section-heading'
@@ -7,28 +7,24 @@ export function SettingsOverview() {
   return (
     <div className="space-y-4">
       <Panel className="p-4 md:p-5">
-        <SectionHeading
-          eyebrow="Settings"
-          title="Presets và cấu hình giao diện"
-          description="Màn settings được gọn lại như bảng cấu hình, không còn chia nhiều hero block dọc."
-        />
+        <SectionHeading eyebrow="Cài đặt" title="Mẫu và cấu hình" />
       </Panel>
 
       <div className="grid gap-4 xl:grid-cols-3">
         <SettingCard
           icon={<SlidersHorizontal className="size-4 text-sky-600" />}
-          title="AHP presets"
-          description="Điểm nối preset manager thật sẽ nằm ở đây khi backend sẵn sàng."
+          title="Mẫu AHP"
+          description="Quản lý mẫu và cấu hình so sánh cặp."
         />
         <SettingCard
           icon={<Palette className="size-4 text-orange-500" />}
-          title="Giao diện vận hành"
-          description="Design tokens semantic đang tách riêng để đổi theme hoặc density dễ hơn."
+          title="Giao diện"
+          description="Điều chỉnh theme và mật độ hiển thị."
         />
         <SettingCard
           icon={<MonitorCog className="size-4 text-emerald-500" />}
-          title="Mock system config"
-          description="Map layers, refresh interval và health endpoint có thể nối bằng adapter mà không sửa UI presentation."
+          title="Hệ thống"
+          description="Thiết lập tần suất cập nhật và lớp dữ liệu."
         />
       </div>
     </div>

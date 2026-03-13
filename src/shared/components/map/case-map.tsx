@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from 'react-leaflet'
+import { CircleMarker, MapContainer, Popup, TileLayer, Tooltip, useMap } from 'react-leaflet'
 import { formatConfidence, formatHours } from '../../lib/format'
 import { severityConfig } from '../../lib/severity'
 import type { RescueCase } from '../../types/domain'
@@ -10,6 +10,10 @@ type CaseMapProps = {
   onSelectCase?: (caseId: string) => void
   className?: string
   zoom?: number
+  fitBoundsPadding?: {
+    topLeft?: [number, number]
+    bottomRight?: [number, number]
+  }
 }
 
 const markerColors = {
@@ -26,6 +30,7 @@ export function CaseMap({
   onSelectCase,
   className = 'h-[28rem]',
   zoom = 12,
+  fitBoundsPadding,
 }: CaseMapProps) {
   const geocodedCases = cases.filter((item) => item.lat !== undefined && item.lng !== undefined)
 
@@ -55,11 +60,16 @@ export function CaseMap({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
-        <FitBoundsController cases={geocodedCases} selectedCaseId={selectedCaseId} />
+        <FitBoundsController
+          cases={geocodedCases}
+          selectedCaseId={selectedCaseId}
+          fitBoundsPadding={fitBoundsPadding}
+        />
         {geocodedCases.map((caseItem) => {
           const severity = severityConfig[caseItem.severity]
           const isSelected = caseItem.id === selectedCaseId
           const color = markerColors[caseItem.severity]
+          const radius = getMarkerRadius(caseItem.severity, isSelected)
 
           return (
             <CircleMarker
@@ -71,11 +81,18 @@ export function CaseMap({
                 fillOpacity: isSelected ? 0.98 : 0.72,
                 weight: isSelected ? 4 : 2,
               }}
-              radius={isSelected ? 14 : 10}
+              radius={radius}
               eventHandlers={{
                 click: () => onSelectCase?.(caseItem.id),
               }}
             >
+              {isSelected ? (
+                <Tooltip direction="top" offset={[0, -10]} permanent>
+                  <span className="text-xs font-semibold text-slate-800">
+                    {caseItem.locationDescription ?? caseItem.id}
+                  </span>
+                </Tooltip>
+              ) : null}
               <Popup>
                 <div className="min-w-64 space-y-3">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
@@ -94,8 +111,7 @@ export function CaseMap({
                     </span>
                   </div>
                   <p className="text-xs text-slate-500">
-                    Chờ {formatHours(caseItem.waitingHours)} • AI{' '}
-                    {formatConfidence(caseItem.aiConfidence)}
+                    Chờ {formatHours(caseItem.waitingHours)} | AI {formatConfidence(caseItem.aiConfidence)}
                   </p>
                 </div>
               </Popup>
@@ -110,9 +126,14 @@ export function CaseMap({
 function FitBoundsController({
   cases,
   selectedCaseId,
+  fitBoundsPadding,
 }: {
   cases: RescueCase[]
   selectedCaseId?: string | null
+  fitBoundsPadding?: {
+    topLeft?: [number, number]
+    bottomRight?: [number, number]
+  }
 }) {
   const map = useMap()
 
@@ -128,9 +149,30 @@ function FitBoundsController({
       .map((item) => [item.lat!, item.lng!] as [number, number])
 
     if (bounds.length > 0) {
-      map.fitBounds(bounds, { padding: [30, 30] })
+      map.fitBounds(bounds, {
+        paddingTopLeft: fitBoundsPadding?.topLeft ?? [30, 30],
+        paddingBottomRight: fitBoundsPadding?.bottomRight ?? [30, 30],
+      })
     }
-  }, [cases, map, selectedCaseId])
+  }, [cases, fitBoundsPadding, map, selectedCaseId])
 
   return null
+}
+
+function getMarkerRadius(
+  severity: RescueCase['severity'],
+  isSelected: boolean,
+) {
+  const baseRadius =
+    severity === 'CRITICAL'
+      ? 12
+      : severity === 'HIGH'
+        ? 10
+        : severity === 'MEDIUM'
+          ? 9
+          : severity === 'LOW'
+            ? 8
+            : 7
+
+  return isSelected ? baseRadius + 4 : baseRadius
 }

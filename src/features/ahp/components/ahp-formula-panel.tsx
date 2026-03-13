@@ -10,26 +10,26 @@ export function AhpFormulaPanel() {
         </div>
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-            Learning Panel
+            Công thức
           </p>
-          <h3 className="text-xl font-bold tracking-tight text-slate-900">Cach tinh cot loi</h3>
+          <h3 className="text-xl font-bold tracking-tight text-slate-900">Cách tính</h3>
         </div>
       </div>
 
       <details className="mt-5 rounded-[1.6rem] bg-[#f3efe8] p-4">
         <summary className="cursor-pointer text-sm font-semibold text-slate-900">
-          Mo cong thuc AHP dung trong workspace
+          Mở công thức
         </summary>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           {[
-            "A'_ij = A_ij / tong cot j",
-            "W_i = trung binh hang i cua A'",
-            'WSV = A × W',
+            "A'_ij = A_ij / tổng cột j",
+            "W_i = trung bình hàng i của A'",
+            'WSV = A x W',
             'CV_i = WSV_i / W_i',
-            'lambda_max = trung binh CV',
+            'lambda_max = trung bình CV',
             'CI = (lambda_max - n) / (n - 1)',
             'CR = CI / RI',
-            'Final Score = S × W',
+            'Final Score = S x W',
           ].map((formula) => (
             <div key={formula} className="rounded-[1.2rem] bg-white px-4 py-3 text-sm text-slate-700">
               {formula}

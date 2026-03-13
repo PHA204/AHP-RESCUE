@@ -26,11 +26,11 @@ export function formatPercent(value: number, digits = 1) {
 }
 
 export function formatHours(hours?: number) {
-  if (hours === undefined) return 'Chưa rõ'
+  if (hours === undefined) return 'Không rõ'
   return `${hours.toFixed(hours >= 10 ? 0 : 1)} giờ`
 }
 
 export function formatConfidence(value?: number) {
-  if (value === undefined) return 'N/A'
+  if (value === undefined) return 'Không rõ'
   return `${Math.round(value * 100)}%`
 }

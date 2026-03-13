@@ -1,8 +1,8 @@
 import { ArrowRight, LifeBuoy, Users } from 'lucide-react'
+import { useDispatchTeamsQuery } from '../../../shared/lib/query-hooks'
 import { Panel } from '../../../shared/components/ui/panel'
 import { SectionHeading } from '../../../shared/components/ui/section-heading'
 import { StatusBadge } from '../../../shared/components/ui/status-badge'
-import { useDispatchTeamsQuery } from '../../../shared/lib/query-hooks'
 
 export function DispatchOverview() {
   const teamsQuery = useDispatchTeamsQuery()
@@ -13,11 +13,7 @@ export function DispatchOverview() {
   return (
     <div className="space-y-4">
       <Panel className="p-4 md:p-5">
-        <SectionHeading
-          eyebrow="Dispatch"
-          title="Điều phối lực lượng cứu hộ"
-          description="Màn dispatch được nén theo kiểu operation board: nhìn nhanh trạng thái đội, sức chứa và hành động tiếp theo."
-        />
+        <SectionHeading eyebrow="Điều phối" title="Điều phối lực lượng cứu hộ" />
 
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           <CompactMetric label="Đội sẵn sàng" value={String(availableCount)} />
@@ -35,7 +31,7 @@ export function DispatchOverview() {
                 <th className="px-4 py-4">Khu vực</th>
                 <th className="px-4 py-4">Trạng thái</th>
                 <th className="px-4 py-4">Sức chứa</th>
-                <th className="px-4 py-4">Workflow</th>
+                <th className="px-4 py-4">Xử lý</th>
               </tr>
             </thead>
             <tbody>
@@ -55,7 +51,11 @@ export function DispatchOverview() {
                             : 'warning'
                       }
                     >
-                      {team.status}
+                      {team.status === 'available'
+                        ? 'Sẵn sàng'
+                        : team.status === 'en_route'
+                          ? 'Đang di chuyển'
+                          : 'Bận'}
                     </StatusBadge>
                   </td>
                   <td className="px-4 py-4 align-top">
@@ -68,13 +68,13 @@ export function DispatchOverview() {
                     <div className="rounded-[1.2rem] bg-[#fff0d9] px-4 py-3 text-sm text-slate-700">
                       <div className="flex items-center gap-2 font-medium">
                         <LifeBuoy className="size-4 text-orange-600" />
-                        Assignment workflow
+                        Điều phối
                       </div>
                       <button
                         type="button"
                         className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-sky-700 hover:text-sky-800"
                       >
-                        Mở điều phối
+                        Mở bảng điều phối
                         <ArrowRight className="size-3.5" />
                       </button>
                     </div>

@@ -1,11 +1,16 @@
 import { ChevronsRightLeft, X } from 'lucide-react'
 import { useCasesQuery } from '../../shared/lib/query-hooks'
-import { useUiStore } from '../store/ui-store'
 import { CaseDetailContent } from '../../shared/components/cases/case-detail-content'
+import { useUiStore } from '../store/ui-store'
 
 export function ContextDrawer() {
-  const { activePresetId, isContextDrawerOpen, selectedCaseId, setContextDrawerOpen, setSelectedCaseId } =
-    useUiStore()
+  const {
+    activePresetId,
+    isContextDrawerOpen,
+    selectedCaseId,
+    setContextDrawerOpen,
+    setSelectedCaseId,
+  } = useUiStore()
   const casesQuery = useCasesQuery(activePresetId)
   const selectedCase = casesQuery.data?.find((item) => item.id === selectedCaseId) ?? null
 
@@ -16,16 +21,16 @@ export function ContextDrawer() {
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-                Selected Case
+                Ca đang chọn
               </p>
-              <p className="mt-2 text-base font-semibold text-slate-900">Chi tiết đang xem</p>
+              <p className="mt-2 text-base font-semibold text-slate-900">Chi tiết</p>
             </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setContextDrawerOpen(!isContextDrawerOpen)}
                 className="clay-icon-button"
-                aria-label="Toggle case drawer"
+                aria-label="Ẩn hiện bảng chi tiết"
               >
                 <ChevronsRightLeft className="size-4" />
               </button>
@@ -33,7 +38,7 @@ export function ContextDrawer() {
                 type="button"
                 onClick={() => setSelectedCaseId(null)}
                 className="clay-icon-button"
-                aria-label="Clear selected case"
+                aria-label="Bỏ chọn ca"
               >
                 <X className="size-4" />
               </button>
@@ -45,7 +50,7 @@ export function ContextDrawer() {
           <CaseDetailContent caseItem={selectedCase} />
         ) : (
           <div className="clay-card border-dashed p-5 text-sm leading-6 text-slate-600">
-            Chọn một ca trên queue hoặc bản đồ để xem raw comment, AI extract và lý do ưu tiên.
+            Chọn một ca để xem chi tiết.
           </div>
         )}
       </div>

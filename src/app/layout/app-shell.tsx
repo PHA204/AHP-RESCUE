@@ -4,7 +4,7 @@ import { ContextDrawer } from './context-drawer'
 import { Topbar } from './topbar'
 import { useUiStore } from '../store/ui-store'
 
-const contextualRoutes = new Set(['/dashboard', '/cases', '/map', '/ahp'])
+const contextualRoutes = new Set(['/dashboard', '/cases', '/ahp'])
 
 export function AppShell() {
   const theme = useUiStore((state) => state.theme)

@@ -1,5 +1,5 @@
-import { formatPercent } from '../../../shared/lib/format'
 import { formatSaatyLabel, saatyScale } from '../../../shared/lib/ahp'
+import { formatPercent } from '../../../shared/lib/format'
 import type { MatrixAnalysis } from '../../../shared/types/ahp'
 
 type AhpPairwiseMatrixEditorProps = {
@@ -23,16 +23,11 @@ export function AhpPairwiseMatrixEditor({
     <div className="space-y-5">
       <div>
         <h4 className="text-lg font-bold text-slate-900">{title}</h4>
-        <p className="mt-1 text-sm text-slate-600">{description}</p>
+        {description ? <p className="mt-1 text-sm text-slate-600">{description}</p> : null}
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[1.2fr,0.8fr]">
-        <MatrixTable
-          title="Matrix A"
-          labels={labels}
-          matrix={matrix}
-          onChange={onChange}
-        />
+        <MatrixTable title="Ma trận A" labels={labels} matrix={matrix} onChange={onChange} />
 
         <div className="rounded-[1.75rem] bg-[#f3efe8] p-4">
           <p className="text-sm font-semibold text-slate-900">Vector trọng số W</p>
@@ -51,13 +46,13 @@ export function AhpPairwiseMatrixEditor({
         </div>
       </div>
 
-      <MatrixTable title="Normalized Matrix A'" labels={labels} matrix={analysis.normalizedMatrix} />
+      <MatrixTable title="Ma trận chuẩn hóa A'" labels={labels} matrix={analysis.normalizedMatrix} />
 
       <div className="rounded-[1.5rem] bg-[#fff0d9] px-4 py-4 text-sm leading-6 text-slate-700">
-        <p className="font-semibold text-slate-900">Saaty scale helper</p>
+        <p className="font-semibold text-slate-900">Thang Saaty</p>
         <p className="mt-2">
-          1 = ngang nhau, 3 = uu tien vua phai, 5 = uu tien manh, 7 = rat manh, 9 = ap dao.
-          Cac gia tri 1/2...1/9 bieu thi chieu nguoc lai.
+          1 = ngang nhau, 3 = ưu tiên vừa phải, 5 = ưu tiên mạnh, 7 = rất mạnh, 9 = áp đảo.
+          Các giá trị 1/2...1/9 biểu thị chiều ngược lại.
         </p>
       </div>
     </div>

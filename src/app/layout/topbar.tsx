@@ -5,11 +5,11 @@ import { useDashboardQuery, usePresetsQuery } from '../../shared/lib/query-hooks
 import { cn } from '../../shared/lib/cn'
 
 const navItems = [
-  { to: '/dashboard', label: 'Mission' },
-  { to: '/cases', label: 'Queue' },
-  { to: '/map', label: 'Map' },
+  { to: '/dashboard', label: 'Tổng quan' },
+  { to: '/cases', label: 'Danh sách' },
+  { to: '/map', label: 'Bản đồ' },
   { to: '/ahp', label: 'AHP' },
-  { to: '/sources', label: 'Sources' },
+  { to: '/sources', label: 'Nguồn' },
 ]
 
 export function Topbar() {
@@ -54,12 +54,12 @@ export function Topbar() {
           <div className="flex items-center gap-2">
             <label className="clay-metric-chip min-w-[12rem] cursor-pointer px-4 py-3">
               <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-                Preset
+                Mẫu AHP
               </span>
               <div className="flex items-center gap-2">
                 <Target className="size-4 text-emerald-600" />
                 <select
-                  aria-label="AHP preset"
+                  aria-label="Chọn mẫu AHP"
                   value={activePresetId}
                   onChange={(event) => setActivePresetId(event.target.value)}
                   className="min-w-0 bg-transparent pr-5 text-sm font-semibold text-slate-900 outline-none"
@@ -75,10 +75,10 @@ export function Topbar() {
             </label>
 
             <MetricChip label="CR" value={stats ? stats.consistencyRatio.toFixed(3) : '...'} tone="orange" />
-            <MetricChip label="Shortlist" value={stats ? String(stats.shortlistedCount) : '...'} tone="blue" />
+            <MetricChip label="Rút gọn" value={stats ? String(stats.shortlistedCount) : '...'} tone="blue" />
 
             <NavLink to="/dispatch" className="clay-button-primary px-4 py-3 text-sm">
-              Open Dispatch
+              Mở điều phối
             </NavLink>
           </div>
         </div>

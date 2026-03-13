@@ -19,10 +19,10 @@ export function AhpProcessOverview({ screenedCases }: AhpProcessOverviewProps) {
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-              AHP Theory
+              Quy trình
             </p>
             <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-              Goal → Criteria → Alternatives
+              Mục tiêu {'->'} Tiêu chí {'->'} Phương án
             </h2>
           </div>
         </div>
@@ -31,22 +31,22 @@ export function AhpProcessOverview({ screenedCases }: AhpProcessOverviewProps) {
           <StepCard
             icon={<GitBranch className="size-4" />}
             step="Bước 1"
-            title="Xây dựng cấu trúc thứ bậc"
-            description="Xác định mục tiêu, các tiêu chí đánh giá và danh sách phương án cần so sánh."
+            title="Cấu trúc thứ bậc"
+            description="Xác định mục tiêu, tiêu chí và phương án."
             tone="sky"
           />
           <StepCard
             icon={<Scale className="size-4" />}
             step="Bước 2"
-            title="Tính trọng số tiêu chí"
-            description="Lập ma trận so sánh cặp, chuẩn hóa, tính vector trọng số và kiểm tra CR."
+            title="Trọng số tiêu chí"
+            description="Lập ma trận, chuẩn hóa và tính CR."
             tone="orange"
           />
           <StepCard
             icon={<Sigma className="size-4" />}
             step="Bước 3"
-            title="Tính ưu tiên phương án"
-            description="So sánh cặp alternatives theo từng criterion, ghép ma trận S rồi tính Final Score."
+            title="Ưu tiên phương án"
+            description="Tính trọng số phương án và tổng hợp điểm."
             tone="emerald"
           />
         </div>
@@ -54,37 +54,29 @@ export function AhpProcessOverview({ screenedCases }: AhpProcessOverviewProps) {
 
       <div className="clay-card p-5 md:p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-          Rescue Context
+          Thiết lập
         </p>
-        <h3 className="mt-2 text-xl font-bold tracking-tight text-slate-900">
-          Screening là bước tiền xử lý thực tế
-        </h3>
-        <p className="mt-3 text-sm leading-6 text-slate-600">
-          Trong hệ thống cứu hộ, số lượng ca có thể rất lớn. Vì vậy app thực hiện screening trước
-          để rút gọn alternatives, nhưng phần AHP lý thuyết phía dưới vẫn giữ đủ 3 bước chuẩn.
-        </p>
-
         <div className="mt-5 grid gap-3">
           <div className="rounded-[1.5rem] bg-[#f3efe8] px-4 py-4">
-            <p className="text-sm font-semibold text-slate-900">Goal</p>
+            <p className="text-sm font-semibold text-slate-900">Mục tiêu</p>
             <p className="mt-1 text-sm text-slate-600">
-              Xac dinh nan nhan can uu tien cuu truoc
+              Xác định nạn nhân cần ưu tiên cứu trước
             </p>
           </div>
           <div className="rounded-[1.5rem] bg-[#e9f6ff] px-4 py-4">
-            <p className="text-sm font-semibold text-slate-900">Criteria</p>
+            <p className="text-sm font-semibold text-slate-900">Tiêu chí</p>
             <p className="mt-1 text-sm text-slate-600">
-              {criteriaOrder.map((criterionKey) => criteriaLabels[criterionKey]).join(' • ')}
+              {criteriaOrder.map((criterionKey) => criteriaLabels[criterionKey]).join(' | ')}
             </p>
           </div>
           <div className="rounded-[1.5rem] bg-[#eefbe7] px-4 py-4">
-            <p className="text-sm font-semibold text-slate-900">Alternatives</p>
+            <p className="text-sm font-semibold text-slate-900">Phương án</p>
             <p className="mt-1 text-sm text-slate-600">
               {alternativesPreview.length > 0
                 ? alternativesPreview
                     .map((caseItem) => caseItem.locationDescription ?? caseItem.id)
-                    .join(' • ')
-                : 'Chua co candidate sau screening'}
+                    .join(' | ')
+                : 'Chưa có phương án'}
             </p>
           </div>
         </div>

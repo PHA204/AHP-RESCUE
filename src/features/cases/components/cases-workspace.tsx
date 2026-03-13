@@ -67,9 +67,8 @@ export function CasesWorkspace() {
     <div className="space-y-4">
       <Panel className="p-4 md:p-5">
         <SectionHeading
-          eyebrow="Cases"
-          title="Victim queue / priority list"
-          description="Man hinh van hanh uu tien loc nhanh, scan nhanh va giu du lieu quan trong tren mot viewport ngan hon."
+          eyebrow="Danh sách"
+          title="Danh sách ưu tiên"
         />
 
         <div className="mt-4 grid gap-3 xl:grid-cols-[1.2fr,0.8fr]">
@@ -79,7 +78,7 @@ export function CasesWorkspace() {
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Tim theo ID, dia diem, raw comment..."
+                placeholder="Tìm theo ID, địa điểm, raw comment..."
                 className="w-full bg-transparent placeholder:text-slate-400 outline-none"
               />
             </label>
@@ -89,11 +88,11 @@ export function CasesWorkspace() {
               onChange={(event) => setSeverity(event.target.value)}
               className="rounded-[1.35rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700"
             >
-              <option value="ALL">Tat ca muc do</option>
-              <option value="CRITICAL">Nguy cap</option>
+              <option value="ALL">Tất cả mức độ</option>
+              <option value="CRITICAL">Nguy cấp</option>
               <option value="HIGH">Cao</option>
-              <option value="MEDIUM">Trung binh</option>
-              <option value="LOW">Thap</option>
+              <option value="MEDIUM">Trung bình</option>
+              <option value="LOW">Thấp</option>
             </select>
 
             <select
@@ -101,11 +100,11 @@ export function CasesWorkspace() {
               onChange={(event) => setStatus(event.target.value)}
               className="rounded-[1.35rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700"
             >
-              <option value="ALL">Tat ca trang thai</option>
-              <option value="waiting">Cho cuu ho</option>
-              <option value="dispatched">Dang dieu phoi</option>
-              <option value="rescued">Da tiep can</option>
-              <option value="false_alarm">Khong hop le</option>
+              <option value="ALL">Tất cả trạng thái</option>
+              <option value="waiting">Chờ cứu hộ</option>
+              <option value="dispatched">Đang điều phối</option>
+              <option value="rescued">Đã tiếp cận</option>
+              <option value="false_alarm">Không hợp lệ</option>
             </select>
 
             <select
@@ -113,26 +112,26 @@ export function CasesWorkspace() {
               onChange={(event) => setGeocode(event.target.value)}
               className="rounded-[1.35rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700"
             >
-              <option value="ALL">Tat ca dinh vi</option>
-              <option value="success">Dinh vi tot</option>
-              <option value="pending">Dang xu ly</option>
-              <option value="failed">Thieu toa do</option>
+              <option value="ALL">Tất cả định vị</option>
+              <option value="success">Định vị tốt</option>
+              <option value="pending">Đang xử lý</option>
+              <option value="failed">Thiếu tọa độ</option>
             </select>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-4">
-            <CompactMetric icon={<Filter className="size-4" />} label="Sau loc" value={`${filteredCases.length}/${totalCases}`} />
-            <CompactMetric icon={<Siren className="size-4" />} label="Nguy cap" value={String(criticalCount)} />
-            <CompactMetric icon={<TimerReset className="size-4" />} label="Dang cho" value={String(waitingCount)} />
-            <CompactMetric icon={<MapPinned className="size-4" />} label="Dinh vi" value={String(geocodedCount)} />
+            <CompactMetric icon={<Filter className="size-4" />} label="Sau lọc" value={`${filteredCases.length}/${totalCases}`} />
+            <CompactMetric icon={<Siren className="size-4" />} label="Nguy cấp" value={String(criticalCount)} />
+            <CompactMetric icon={<TimerReset className="size-4" />} label="Đang chờ" value={String(waitingCount)} />
+            <CompactMetric icon={<MapPinned className="size-4" />} label="Định vị" value={String(geocodedCount)} />
           </div>
         </div>
       </Panel>
 
       {filteredCases.length === 0 ? (
         <EmptyState
-          title="Khong co ca nao khop bo loc"
-          description="Thu noi dieu kien severity, geocode hoac tu khoa de mo lai candidate set."
+          title="Không có ca nào khớp bộ lọc"
+          description="Thử đổi bộ lọc hoặc từ khóa tìm kiếm."
         />
       ) : (
         <Panel className="overflow-hidden">
@@ -140,15 +139,15 @@ export function CasesWorkspace() {
             <table className="min-w-full text-left">
               <thead className="sticky top-0 z-10 bg-[#f8fbff] text-xs uppercase tracking-[0.2em] text-slate-500">
                 <tr>
-                  <th className="px-4 py-4">Case</th>
-                  <th className="px-4 py-4">Muc do</th>
-                  <th className="px-4 py-4">Dia diem</th>
-                  <th className="px-4 py-4">Nguoi / nhom</th>
+                  <th className="px-4 py-4">Ca</th>
+                  <th className="px-4 py-4">Mức độ</th>
+                  <th className="px-4 py-4">Địa điểm</th>
+                  <th className="px-4 py-4">Người / nhóm</th>
                   <th className="px-4 py-4">AHP</th>
-                  <th className="px-4 py-4">Cho</th>
+                  <th className="px-4 py-4">Chờ</th>
                   <th className="px-4 py-4">AI</th>
-                  <th className="px-4 py-4">Trang thai</th>
-                  <th className="px-4 py-4">Nguon</th>
+                  <th className="px-4 py-4">Trạng thái</th>
+                  <th className="px-4 py-4">Nguồn</th>
                 </tr>
               </thead>
               <tbody>
@@ -181,11 +180,11 @@ export function CasesWorkspace() {
                         <p className="mt-1 text-xs text-slate-500">{caseItem.district}</p>
                       </td>
                       <td className="px-4 py-3 align-top">
-                        <p className="text-sm text-slate-900">{caseItem.numPeople ?? 0} nguoi</p>
+                        <p className="text-sm text-slate-900">{caseItem.numPeople ?? 0} người</p>
                         <p className="mt-1 text-xs text-slate-500">
                           {caseItem.vulnerableGroups.length > 0
                             ? caseItem.vulnerableGroups.join(', ')
-                            : 'Khong phat hien'}
+                            : 'Không phát hiện'}
                         </p>
                       </td>
                       <td className="px-4 py-3 align-top">
@@ -193,7 +192,7 @@ export function CasesWorkspace() {
                           {formatPercent(caseItem.currentScore ?? 0)}
                         </p>
                         <p className="mt-1 text-xs text-slate-500">
-                          {caseItem.currentRank ? `Hang #${caseItem.currentRank}` : 'Chua xep hang'}
+                          {caseItem.currentRank ? `Hạng #${caseItem.currentRank}` : 'Chưa xếp hạng'}
                         </p>
                       </td>
                       <td className="px-4 py-3 align-top text-sm text-slate-700">
@@ -220,7 +219,7 @@ export function CasesWorkspace() {
                           className="mt-2 inline-flex items-center gap-2 text-xs text-cyan-700 hover:text-cyan-800"
                         >
                           <ExternalLink className="size-3.5" />
-                          Mo trong map
+                          Mở trong bản đồ
                         </button>
                       </td>
                     </tr>

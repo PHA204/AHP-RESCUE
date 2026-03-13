@@ -8,9 +8,9 @@ import {
   ShieldAlert,
   Users,
 } from 'lucide-react'
-import type { RescueCase } from '../../types/domain'
 import { formatConfidence, formatHours, formatLongDateTime } from '../../lib/format'
 import { geocodeStatusLabel, rescueStatusLabel, severityConfig } from '../../lib/severity'
+import type { RescueCase } from '../../types/domain'
 import { Panel } from '../ui/panel'
 import { StatusBadge } from '../ui/status-badge'
 
@@ -44,24 +44,24 @@ export function CaseDetailContent({ caseItem }: CaseDetailContentProps) {
           <InfoRow icon={<ShieldAlert className="size-4" />} label="Mức độ" value={severity.label} />
           <InfoRow icon={<Users className="size-4" />} label="Số người" value={`${caseItem.numPeople ?? 0} người`} />
           <InfoRow icon={<Clock3 className="size-4" />} label="Thời gian chờ" value={formatHours(caseItem.waitingHours)} />
-          <InfoRow icon={<BrainCircuit className="size-4" />} label="AI confidence" value={formatConfidence(caseItem.aiConfidence)} />
+          <InfoRow icon={<BrainCircuit className="size-4" />} label="AI" value={formatConfidence(caseItem.aiConfidence)} />
           <InfoRow icon={<LocateFixed className="size-4" />} label="Tiếp cận" value={caseItem.accessibility ?? 'Chưa rõ'} />
           <InfoRow icon={<MapPinned className="size-4" />} label="Cập nhật" value={formatLongDateTime(caseItem.updatedAt)} />
         </div>
       </Panel>
 
       <Panel className="p-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-700">AI Extract</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-700">AI trích xuất</p>
         <div className="mt-3 grid gap-3 text-sm text-slate-700">
           <p>
-            <span className="text-slate-500">Nhóm yếu thế:</span>{' '}
+            <span className="text-slate-500">Nhóm dễ tổn thương:</span>{' '}
             {caseItem.vulnerableGroups.length > 0 ? caseItem.vulnerableGroups.join(', ') : 'Không phát hiện'}
           </p>
           <p>
             <span className="text-slate-500">Nguồn:</span> {caseItem.sourcePostId}
           </p>
           <p>
-            <span className="text-slate-500">Hạng AHP hiện tại:</span>{' '}
+            <span className="text-slate-500">Hạng AHP:</span>{' '}
             {caseItem.currentRank ? `#${caseItem.currentRank}` : 'Chưa xếp hạng'}
           </p>
         </div>

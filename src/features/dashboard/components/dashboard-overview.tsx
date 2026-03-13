@@ -60,35 +60,31 @@ export function DashboardOverview() {
         <div className="space-y-5">
           <div className="clay-chip w-fit bg-[#8bee8d] text-slate-900">
             <span className="size-2.5 rounded-full bg-emerald-500" />
-            AI + AHP cho dieu phoi SOS
+            AI + AHP cho điều phối SOS
           </div>
 
           <div className="max-w-[40rem]">
             <h1 className="text-3xl font-bold leading-tight tracking-tight text-slate-900 md:text-5xl">
-              Bang dieu phoi cuu ho
-              <span className="text-emerald-500"> nhanh, ro va de thao tac</span>
+              Bảng điều phối cứu hộ
+              <span className="text-emerald-500"> nhanh, rõ và dễ thao tác</span>
             </h1>
-            <p className="mt-3 max-w-[36rem] text-base leading-7 text-slate-600">
-              Thay vi landing page dai, man hinh nay uu tien thao tac: mo queue, focus top case,
-              va nhay sang AHP workspace ngay khi can giai thich.
-            </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
             <Link to="/cases" className="clay-button-primary px-5 py-3 text-sm">
-              Mo Priority Queue
+              Mở danh sách ưu tiên
               <ArrowRight className="size-4" />
             </Link>
             <Link to="/ahp" className="clay-button-secondary px-5 py-3 text-sm">
-              Mo AHP Workspace
+              Mở khu vực AHP
             </Link>
           </div>
 
           <div className="grid max-w-[40rem] grid-cols-2 gap-3 md:grid-cols-4">
-            <HeroMetric value={data.stats.waitingCases} label="Dang cho cuu ho" />
-            <HeroMetric value={data.stats.criticalCount} label="Ca nguy cap" />
-            <HeroMetric value={data.stats.geocodedCount} label="Da dinh vi" />
-            <HeroMetric value={data.stats.activePosts} label="Nguon dang live" />
+            <HeroMetric value={data.stats.waitingCases} label="Đang chờ cứu hộ" />
+            <HeroMetric value={data.stats.criticalCount} label="Ca nguy cấp" />
+            <HeroMetric value={data.stats.geocodedCount} label="Đã định vị" />
+            <HeroMetric value={data.stats.activePosts} label="Nguồn đang chạy" />
           </div>
         </div>
 
@@ -100,15 +96,15 @@ export function DashboardOverview() {
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                  Dispatch Focus
+                  Ca ưu tiên
                 </p>
                 <p className="mt-2 text-xl font-bold tracking-tight text-slate-900">
-                  {heroCase?.locationDescription ?? 'Dang tong hop ca uu tien'}
+                  {heroCase?.locationDescription ?? 'Đang tổng hợp ca ưu tiên'}
                 </p>
                 <p className="mt-1 text-sm text-slate-500">
                   {heroCase
-                    ? `${heroCase.numPeople ?? 0} nguoi • ${heroCase.district}`
-                    : 'Chua co du lieu'}
+                    ? `${heroCase.numPeople ?? 0} người • ${heroCase.district}`
+                    : 'Chưa có dữ liệu'}
                 </p>
               </div>
             </div>
@@ -122,12 +118,12 @@ export function DashboardOverview() {
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <QuickMetric
               icon={<Target className="size-4" />}
-              label="Preset hien tai"
+              label="Mẫu hiện tại"
               value={data.stats.currentPresetLabel}
             />
             <QuickMetric
               icon={<MapPinned className="size-4" />}
-              label="Readiness"
+              label="Sẵn sàng"
               value={`${Math.round(geocodedRate * 100)}%`}
             />
           </div>
@@ -137,7 +133,7 @@ export function DashboardOverview() {
             className="mt-5 inline-flex w-full items-center justify-center rounded-[1.2rem] border-[3px] border-slate-800 bg-emerald-500 px-5 py-3 text-sm font-bold text-white shadow-[5px_6px_0_rgba(43,54,80,0.92)] transition hover:bg-emerald-600"
             onClick={() => heroCase && setSelectedCaseId(heroCase.id)}
           >
-            Focus top case
+            Chọn ca ưu tiên
           </button>
         </div>
       </section>
@@ -145,9 +141,8 @@ export function DashboardOverview() {
       <div className="grid gap-5 xl:grid-cols-[1.15fr,0.85fr]">
         <Panel className="p-5 md:p-6">
           <SectionHeading
-            eyebrow="Map"
-            title="Ban do dieu phoi"
-            description="Map-first, gon va truc tiep. Chon mot ca o shortlist de focus ngay tren ban do."
+            eyebrow="Bản đồ"
+            title="Bản đồ điều phối"
             action={
               <div className="flex flex-wrap gap-2">
                 {filterOptions.map((option) => (
@@ -161,7 +156,7 @@ export function DashboardOverview() {
                         : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                     }`}
                   >
-                    {option === 'ALL' ? 'Tat ca' : severityConfig[option].label}
+                    {option === 'ALL' ? 'Tất cả' : severityConfig[option].label}
                   </button>
                 ))}
               </div>
@@ -178,11 +173,7 @@ export function DashboardOverview() {
         </Panel>
 
         <Panel className="p-5 md:p-6">
-          <SectionHeading
-            eyebrow="Queue"
-            title="Shortlist hien tai"
-            description="Chi giu phan can nhin ngay: vi tri, muc do, so nguoi va diem AHP."
-          />
+          <SectionHeading eyebrow="Danh sách" title="Danh sách rút gọn" />
 
           <div className="mt-4 space-y-3">
             {topCases.map((caseItem) => (
@@ -199,7 +190,7 @@ export function DashboardOverview() {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                      Hang #{caseItem.currentRank}
+                      Hạng #{caseItem.currentRank}
                     </p>
                     <p className="mt-2 text-sm font-bold text-slate-900">
                       {caseItem.locationDescription}
@@ -211,7 +202,7 @@ export function DashboardOverview() {
                   </StatusBadge>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <QueueTag icon={<Users className="size-3.5" />} label={`${caseItem.numPeople ?? 0} nguoi`} />
+                  <QueueTag icon={<Users className="size-3.5" />} label={`${caseItem.numPeople ?? 0} người`} />
                   <QueueTag
                     icon={<Target className="size-3.5" />}
                     label={`AHP ${formatPercent(caseItem.currentScore ?? 0)}`}
