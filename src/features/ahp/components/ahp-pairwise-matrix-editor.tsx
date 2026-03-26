@@ -1,6 +1,8 @@
+﻿// REFACTORED: clarified matrix editing UX with Saaty legend, verbal select labels, and advanced normalization toggle
 import { formatSaatyLabel, saatyScale } from '../../../shared/lib/ahp'
 import { formatPercent } from '../../../shared/lib/format'
 import type { MatrixAnalysis } from '../../../shared/types/ahp'
+import { SaatyLegendStrip } from '../../../shared/components/ui/saaty-legend-strip'
 
 type AhpPairwiseMatrixEditorProps = {
   labels: string[]
@@ -11,6 +13,36 @@ type AhpPairwiseMatrixEditorProps = {
   description: string
 }
 
+type MatrixOption = {
+  value: number
+  label: string
+}
+
+const scaleDescriptions: Record<string, string> = {
+  '9': '9 — Tuyệt đối hơn',
+  '8': '8 — Trung gian',
+  '7': '7 — Rất quan trọng hơn',
+  '6': '6 — Trung gian',
+  '5': '5 — Quan trọng hơn',
+  '4': '4 — Trung gian',
+  '3': '3 — Hơi quan trọng hơn',
+  '2': '2 — Trung gian',
+  '1': '1 — Ngang nhau',
+  '1/2': '1/2 — Kém quan trọng hơn nhẹ',
+  '1/3': '1/3 — Kém quan trọng hơn vừa phải',
+  '1/4': '1/4 — Kém quan trọng hơn trung gian',
+  '1/5': '1/5 — Kém quan trọng hơn rõ rệt',
+  '1/6': '1/6 — Kém quan trọng hơn mạnh',
+  '1/7': '1/7 — Kém quan trọng hơn rất mạnh',
+  '1/8': '1/8 — Kém quan trọng hơn trung gian',
+  '1/9': '1/9 — Kém quan trọng hơn tuyệt đối',
+}
+
+const describedSaatyScale: MatrixOption[] = saatyScale.map((option) => ({
+  value: option.value,
+  label: scaleDescriptions[option.label] ?? `${option.label} — Giá trị tuỳ chỉnh`,
+}))
+
 export function AhpPairwiseMatrixEditor({
   labels,
   matrix,
@@ -19,6 +51,9 @@ export function AhpPairwiseMatrixEditor({
   title,
   description,
 }: AhpPairwiseMatrixEditorProps) {
+  const leftLabel = labels[0] ?? 'tiêu chí i'
+  const rightLabel = labels[1] ?? 'tiêu chí j'
+
   return (
     <div className="space-y-5">
       <div>
@@ -26,8 +61,15 @@ export function AhpPairwiseMatrixEditor({
         {description ? <p className="mt-1 text-sm text-slate-600">{description}</p> : null}
       </div>
 
+      <SaatyLegendStrip />
+
       <div className="grid gap-4 xl:grid-cols-[1.2fr,0.8fr]">
-        <MatrixTable title="Ma trận A" labels={labels} matrix={matrix} onChange={onChange} />
+        <div className="space-y-4">
+          <MatrixTable title="Ma trận so sánh A" labels={labels} matrix={matrix} onChange={onChange} />
+          <p className="rounded-[1.25rem] bg-slate-100 px-4 py-3 text-sm italic leading-6 text-slate-600">
+            Ô [hàng i, cột j]: mức độ ưu tiên của {leftLabel} so với {rightLabel}. Giá trị &gt; 1 nghĩa là hàng i quan trọng hơn cột j. Giá trị = 1 nghĩa là ngang nhau. Giá trị &lt; 1 nghĩa là kém quan trọng hơn.
+          </p>
+        </div>
 
         <div className="rounded-[1.75rem] bg-[#f3efe8] p-4">
           <p className="text-sm font-semibold text-slate-900">Vector trọng số W</p>
@@ -46,15 +88,14 @@ export function AhpPairwiseMatrixEditor({
         </div>
       </div>
 
-      <MatrixTable title="Ma trận chuẩn hóa A'" labels={labels} matrix={analysis.normalizedMatrix} />
-
-      <div className="rounded-[1.5rem] bg-[#fff0d9] px-4 py-4 text-sm leading-6 text-slate-700">
-        <p className="font-semibold text-slate-900">Thang Saaty</p>
-        <p className="mt-2">
-          1 = ngang nhau, 3 = ưu tiên vừa phải, 5 = ưu tiên mạnh, 7 = rất mạnh, 9 = áp đảo.
-          Các giá trị 1/2...1/9 biểu thị chiều ngược lại.
-        </p>
-      </div>
+      <details className="rounded-[1.5rem] border border-slate-200 bg-white px-4 py-4">
+        <summary className="cursor-pointer text-sm font-semibold text-slate-900">
+          📊 Xem ma trận chuẩn hóa (nâng cao)
+        </summary>
+        <div className="mt-4">
+          <MatrixTable title="Ma trận chuẩn hóa A'" labels={labels} matrix={analysis.normalizedMatrix} />
+        </div>
+      </details>
     </div>
   )
 }
@@ -124,18 +165,17 @@ function MatrixTable({
                     )
                   }
 
-                  const selectOptions = getSelectOptions(value)
+                  const options = getSelectOptions(value)
+                  const selectedValue = options.find((option) => Math.abs(option.value - value) < 0.0001)?.value ?? value
 
                   return (
                     <td key={columnLabel} className="p-2">
                       <select
-                        value={String(value)}
-                        onChange={(event) =>
-                          onChange(rowIndex, columnIndex, Number(event.target.value))
-                        }
+                        value={String(selectedValue)}
+                        onChange={(event) => onChange(rowIndex, columnIndex, Number(event.target.value))}
                         className="w-full rounded-[1.1rem] border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700 shadow-[0_8px_18px_rgba(37,99,235,0.05)]"
                       >
-                        {selectOptions.map((option) => (
+                        {options.map((option) => (
                           <option key={option.label} value={option.value}>
                             {option.label}
                           </option>
@@ -162,11 +202,16 @@ function ReadOnlyCell({ value }: { value: number }) {
 }
 
 function getSelectOptions(currentValue: number) {
-  const currentExists = saatyScale.some((option) => Math.abs(option.value - currentValue) < 0.0001)
+  const currentExists = describedSaatyScale.some(
+    (option) => Math.abs(option.value - currentValue) < 0.0001,
+  )
 
   if (currentExists) {
-    return saatyScale
+    return describedSaatyScale
   }
 
-  return [{ value: currentValue, label: formatSaatyLabel(currentValue) }, ...saatyScale]
+  return [
+    { value: currentValue, label: `${formatSaatyLabel(currentValue)} — Giá trị hiện tại` },
+    ...describedSaatyScale,
+  ]
 }

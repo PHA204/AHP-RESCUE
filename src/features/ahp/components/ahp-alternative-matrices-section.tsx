@@ -1,5 +1,6 @@
+﻿// REFACTORED: clarified alternative-matrix labels and copy for the criterion-by-criterion comparison step
 import { Layers3 } from 'lucide-react'
-import { criteriaLabels, criteriaOrder, setMatrixValue } from '../../../shared/lib/ahp'
+import { criteriaOrder, setMatrixValue } from '../../../shared/lib/ahp'
 import type { AlternativeMatrixMap, MatrixAnalysis } from '../../../shared/types/ahp'
 import type { CriterionKey, RescueCase } from '../../../shared/types/domain'
 import { Panel } from '../../../shared/components/ui/panel'
@@ -15,6 +16,14 @@ type AhpAlternativeMatricesSectionProps = {
   matrices: AlternativeMatrixMap
   onChangeMatrix: (criterionKey: CriterionKey, nextMatrix: number[][]) => void
   analyses: Record<CriterionKey, MatrixAnalysis>
+}
+
+const criterionDisplayLabels: Record<CriterionKey, string> = {
+  danger_level: 'Mức độ nguy hiểm',
+  num_people: 'Số người mắc kẹt',
+  vulnerable_groups: 'Nhóm dễ tổn thương',
+  waiting_time: 'Thời gian chờ cứu hộ',
+  accessibility: 'Khả năng tiếp cận',
 }
 
 export function AhpAlternativeMatricesSection({
@@ -35,7 +44,7 @@ export function AhpAlternativeMatricesSection({
       <Panel className="p-5 md:p-6">
         <SectionHeading
           eyebrow="Bước 3"
-          title="Ma trận phương án theo tiêu chí"
+          title="Đánh giá phương án theo từng tiêu chí"
           action={
             <div className="inline-flex items-center gap-2 rounded-full bg-[#eefbe7] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
               <Layers3 className="size-4" />
@@ -56,7 +65,7 @@ export function AhpAlternativeMatricesSection({
                   : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
               }`}
             >
-              {criteriaLabels[criterionKey]}
+              {criterionDisplayLabels[criterionKey]}
             </button>
           ))}
         </div>
@@ -67,8 +76,8 @@ export function AhpAlternativeMatricesSection({
               labels={labels}
               matrix={activeMatrix}
               analysis={activeAnalysis}
-              title={`Ma trận cho tiêu chí: ${criteriaLabels[activeCriterion]}`}
-              description=""
+              title={`Ma trận theo tiêu chí: ${criterionDisplayLabels[activeCriterion]}`}
+              description="Đây là bước so sánh từng phương án theo đúng một tiêu chí cụ thể."
               onChange={(rowIndex, columnIndex, nextValue) =>
                 onChangeMatrix(
                   activeCriterion,
@@ -84,7 +93,7 @@ export function AhpAlternativeMatricesSection({
         <AhpConsistencyPanel
           labels={labels}
           analysis={activeAnalysis}
-          title={`Độ nhất quán: ${criteriaLabels[activeCriterion]}`}
+          title={`Độ nhất quán cho tiêu chí: ${criterionDisplayLabels[activeCriterion]}`}
         />
       ) : null}
     </div>
