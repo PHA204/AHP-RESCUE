@@ -6,7 +6,7 @@ import {
   fetchPipelineStatus,
   fetchPosts,
   fetchPresets,
-} from '../../mock/api'
+} from '@/lib/api'
 
 export function useDashboardQuery(activePresetId: string) {
   return useQuery({
